@@ -362,6 +362,17 @@ impl LlmDriver for OpenAIDriver {
                 .text()
                 .await
                 .map_err(|e| LlmError::Http(e.to_string()))?;
+
+            // Empty body on a 200 OK means the provider dropped the connection
+            // or silently rejected the request (common on context overflow).
+            // Treat as transient so the fallback/retry logic can handle it.
+            if body.trim().is_empty() {
+                return Err(LlmError::Api {
+                    status: 200,
+                    message: "Empty response body from provider (possible context overflow or connection drop)".to_string(),
+                });
+            }
+
             let oai_response: OaiResponse =
                 serde_json::from_str(&body).map_err(|e| LlmError::Parse(e.to_string()))?;
 
