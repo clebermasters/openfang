@@ -6,6 +6,7 @@
 use crate::formatter;
 use crate::router::AgentRouter;
 use crate::types::{ChannelAdapter, ChannelContent, ChannelMessage, ChannelUser};
+use crate::voice_processor::VoiceProcessor;
 use async_trait::async_trait;
 use dashmap::DashMap;
 use futures::StreamExt;
@@ -440,6 +441,36 @@ async fn dispatch_message(
             let result = handle_command(name, args, handle, router, &message.sender).await;
             send_response(adapter, &message.sender, result, thread_id, output_format).await;
             return;
+        }
+        ChannelContent::Voice { file_id, .. } => {
+            let processor = match VoiceProcessor::new() {
+                Ok(p) => p,
+                Err(e) => {
+                    send_response(
+                        adapter,
+                        &message.sender,
+                        format!("Failed to process voice: {}", e),
+                        thread_id,
+                        output_format,
+                    )
+                    .await;
+                    return;
+                }
+            };
+            match processor.process(file_id).await {
+                Ok(transcribed) => transcribed,
+                Err(e) => {
+                    send_response(
+                        adapter,
+                        &message.sender,
+                        format!("Failed to transcribe: {}", e),
+                        thread_id,
+                        output_format,
+                    )
+                    .await;
+                    return;
+                }
+            }
         }
         _ => {
             send_response(

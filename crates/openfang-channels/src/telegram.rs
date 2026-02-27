@@ -337,12 +337,37 @@ fn parse_telegram_update(
     let chat_type = message["chat"]["type"].as_str().unwrap_or("private");
     let is_group = chat_type == "group" || chat_type == "supergroup";
 
-    let text = message["text"].as_str()?;
     let message_id = message["message_id"].as_i64().unwrap_or(0);
     let timestamp = message["date"]
         .as_i64()
         .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0))
         .unwrap_or_else(chrono::Utc::now);
+
+    // Check for voice message first
+    if let Some(voice) = message.get("voice") {
+        let file_id = voice["file_id"].as_str()?.to_string();
+        let duration_seconds = voice["duration"].as_u64().unwrap_or(0) as u32;
+        return Some(ChannelMessage {
+            channel: ChannelType::Telegram,
+            platform_message_id: message_id.to_string(),
+            sender: ChannelUser {
+                platform_id: chat_id.to_string(),
+                display_name,
+                openfang_user: None,
+            },
+            content: ChannelContent::Voice {
+                file_id,
+                duration_seconds,
+            },
+            target_agent: None,
+            timestamp,
+            is_group,
+            thread_id: None,
+            metadata: HashMap::new(),
+        });
+    }
+
+    let text = message["text"].as_str()?;
 
     // Parse bot commands (Telegram sends entities for /commands)
     let content = if let Some(entities) = message["entities"].as_array() {

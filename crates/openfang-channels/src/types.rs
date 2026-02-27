@@ -50,7 +50,7 @@ pub enum ChannelContent {
         filename: String,
     },
     Voice {
-        url: String,
+        file_id: String,
         duration_seconds: u32,
     },
     Location {
