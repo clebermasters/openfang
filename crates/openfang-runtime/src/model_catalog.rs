@@ -2246,22 +2246,8 @@ fn builtin_models() -> Vec<ModelCatalogEntry> {
             aliases: vec![],
         },
         // ══════════════════════════════════════════════════════════════
-        // MiniMax (3)
+        // MiniMax (4)
         // ══════════════════════════════════════════════════════════════
-        ModelCatalogEntry {
-            id: "minimax-text-01".into(),
-            display_name: "MiniMax Text 01".into(),
-            provider: "minimax".into(),
-            tier: ModelTier::Smart,
-            context_window: 1_048_576,
-            max_output_tokens: 16_384,
-            input_cost_per_m: 1.00,
-            output_cost_per_m: 3.00,
-            supports_tools: true,
-            supports_vision: false,
-            supports_streaming: true,
-            aliases: vec!["minimax".into()],
-        },
         ModelCatalogEntry {
             id: "MiniMax-M2.1".into(),
             display_name: "MiniMax M2.1".into(),
@@ -2271,6 +2257,34 @@ fn builtin_models() -> Vec<ModelCatalogEntry> {
             max_output_tokens: 16_384,
             input_cost_per_m: 1.00,
             output_cost_per_m: 3.00,
+            supports_tools: true,
+            supports_vision: false,
+            supports_streaming: true,
+            aliases: vec![],
+        },
+        ModelCatalogEntry {
+            id: "MiniMax-M2.5".into(),
+            display_name: "MiniMax M2.5".into(),
+            provider: "minimax".into(),
+            tier: ModelTier::Smart,
+            context_window: 196_608,
+            max_output_tokens: 65_536, // Set to 64k for long-form reasoning/generation
+            input_cost_per_m: 0.30,
+            output_cost_per_m: 1.20,
+            supports_tools: true,
+            supports_vision: false,
+            supports_streaming: true,
+            aliases: vec![],
+},
+        ModelCatalogEntry {
+            id: "MiniMax-Text-01".into(),
+            display_name: "MiniMax Text 01".into(),
+            provider: "minimax".into(),
+            tier: ModelTier::Balanced,
+            context_window: 204_800,
+            max_output_tokens: 2_048,
+            input_cost_per_m: 0.30,
+            output_cost_per_m: 1.20,
             supports_tools: true,
             supports_vision: false,
             supports_streaming: true,
