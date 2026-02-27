@@ -921,6 +921,10 @@ pub async fn get_agent(
             "capabilities": {
                 "tools": entry.manifest.capabilities.tools,
                 "network": entry.manifest.capabilities.network,
+                "shell": entry.manifest.capabilities.shell,
+                "memory_read": entry.manifest.capabilities.memory_read,
+                "memory_write": entry.manifest.capabilities.memory_write,
+                "agent_message": entry.manifest.capabilities.agent_message,
             },
             "description": entry.manifest.description,
             "tags": entry.manifest.tags,
